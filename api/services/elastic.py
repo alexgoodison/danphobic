@@ -9,6 +9,4 @@ es = Elasticsearch(
     api_key=os.getenv("ELASTIC_API_KEY"),
 )
 
-
-
 es_index = os.getenv("ELASTIC_INDEX")

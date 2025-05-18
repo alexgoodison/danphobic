@@ -3,7 +3,6 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -26,6 +25,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ArrowUpDown } from "lucide-react";
+
+type SortConfig = {
+  column: string | null;
+  direction: "asc" | "desc";
+};
 
 const columns = [
   { id: "datetime", label: "Date & Time" },
@@ -49,6 +54,7 @@ export default function DataTable({ data, className, description }: DataTablePro
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ column: null, direction: "asc" });
 
   const toggleColumn = (columnId: string) => {
     const newVisibleColumns = new Set(visibleColumns);
@@ -60,10 +66,29 @@ export default function DataTable({ data, className, description }: DataTablePro
     setVisibleColumns(newVisibleColumns);
   };
 
-  const totalPages = Math.ceil(data.length / pageSize);
+  const handleSort = (columnId: string) => {
+    setSortConfig((current) => ({
+      column: columnId,
+      direction: current.column === columnId && current.direction === "asc" ? "desc" : "asc",
+    }));
+  };
+
+  const sortedData = [...data].sort((a, b) => {
+    if (!sortConfig.column) return 0;
+
+    const aValue = a[sortConfig.column as keyof LogEntry];
+    const bValue = b[sortConfig.column as keyof LogEntry];
+
+    if (aValue === bValue) return 0;
+
+    const comparison = aValue < bValue ? -1 : 1;
+    return sortConfig.direction === "asc" ? comparison : -comparison;
+  });
+
+  const totalPages = Math.ceil(sortedData.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
-  const currentData = data.slice(startIndex, endIndex);
+  const currentData = sortedData.slice(startIndex, endIndex);
 
   return (
     <div className={cn("space-y-4 mx-6", className)}>
@@ -119,8 +144,14 @@ export default function DataTable({ data, className, description }: DataTablePro
               {columns.map(
                 (column) =>
                   visibleColumns.has(column.id) && (
-                    <TableHead key={column.id} className="px-6">
-                      {column.label}
+                    <TableHead
+                      key={column.id}
+                      className="px-6 cursor-pointer hover:bg-muted/50"
+                      onClick={() => handleSort(column.id)}>
+                      <div className="flex items-center gap-2">
+                        {column.label}
+                        {sortConfig.column === column.id && <ArrowUpDown className="h-4 w-4" />}
+                      </div>
                     </TableHead>
                   )
               )}

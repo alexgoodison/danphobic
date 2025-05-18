@@ -68,7 +68,7 @@ export function SectionCards({ data }: SectionCardsProps) {
               variant="outline"
               className={Number(errorRate) > 5 ? "text-destructive" : ""}>
               <IconAlertCircle />
-              {errorRequests} errors
+              {errorRequests} error{errorRequests === 1 ? "" : "s"}
             </Badge>
           </CardAction>
         </CardHeader>

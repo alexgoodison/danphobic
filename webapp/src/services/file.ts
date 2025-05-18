@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_ENDPOINT = "http://127.0.0.1:8000/upload";
+const NEXT_PUBLIC_API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
 export interface UploadResponse {
   success: boolean;
@@ -13,7 +13,7 @@ export async function uploadLogFile(file: File): Promise<UploadResponse> {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await axios.post(API_ENDPOINT, formData, {
+    const response = await axios.post(NEXT_PUBLIC_API_ENDPOINT + "/upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

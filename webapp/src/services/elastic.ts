@@ -32,17 +32,9 @@ export const createLogEntry = async (logEntry: Record<string, any>) => {
 
 // Read log entries with optional filters
 export const getLogEntries = async (
-  filters: Record<string, any> = {},
-  size: number = 10
+  query = { bool: { must: [] } },
+  size: number = 10000
 ): Promise<LogEntry[]> => {
-  const query = {
-    bool: {
-      must: Object.entries(filters).map(([key, value]) => ({
-        match: { [key]: value },
-      })),
-    },
-  };
-
   const response = await client.search({
     index,
     query,

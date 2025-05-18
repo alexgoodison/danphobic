@@ -5,10 +5,8 @@ import {
   IconChartBar,
   IconDashboard,
   IconInnerShadowTop,
-  IconListDetails,
-  IconSearch,
+  IconTestPipe,
 } from "@tabler/icons-react";
-
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import {
@@ -34,19 +32,14 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: "Pipeline",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      title: "Analytics",
-      url: "#",
+      title: "Analyse Logs",
+      url: "/analyse",
       icon: IconChartBar,
     },
     {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
+      title: "Pipeline (Future)",
+      url: "/pipeline",
+      icon: IconTestPipe,
     },
   ],
 };

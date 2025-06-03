@@ -32,6 +32,7 @@ export interface LogAnalysisReport {
   requests_per_minute: any;
   error_paths: any;
   path_counts: Record<string, number>;
+  bot_vs_human_traffic: any;
   insights: string[];
   summary: string;
   map_markers: Array<{

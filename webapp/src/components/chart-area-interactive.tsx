@@ -86,10 +86,11 @@ export function ChartAreaInteractive({ data }: ChartDataProps) {
         "2xx": counts["2xx"],
         "4xx": counts["4xx"],
         "5xx": counts["5xx"],
-        avgResponseTime: Math.round(counts.totalTime / counts.count),
       }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [data]);
+
+  console.log(processedData);
 
   return (
     <Card className="@container/card">
@@ -154,10 +155,10 @@ export function ChartAreaInteractive({ data }: ChartDataProps) {
               }
             />
             <Area
-              dataKey="2xx"
+              dataKey="5xx"
               type="natural"
-              fill="url(#fill2xx)"
-              stroke="var(--color-2xx)"
+              fill="url(#fill5xx)"
+              stroke="var(--color-5xx)"
               stackId="a"
             />
             <Area
@@ -168,10 +169,10 @@ export function ChartAreaInteractive({ data }: ChartDataProps) {
               stackId="a"
             />
             <Area
-              dataKey="5xx"
+              dataKey="2xx"
               type="natural"
-              fill="url(#fill5xx)"
-              stroke="var(--color-5xx)"
+              fill="url(#fill2xx)"
+              stroke="var(--color-2xx)"
               stackId="a"
             />
           </AreaChart>

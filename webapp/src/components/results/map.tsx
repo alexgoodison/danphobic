@@ -30,7 +30,7 @@ export default function MapComponent({ report }: { report: LogAnalysisReport }) 
         mapboxAccessToken={mapboxToken}
         mapStyle="mapbox://styles/mapbox/streets-v12"
         style={{ width: "100%", height: 400, borderRadius: "0.75rem" }}
-        initialViewState={{ latitude: 35.668641, longitude: 139.750567, zoom: 0 }}
+        initialViewState={{ latitude: 39.8283, longitude: -98.5795, zoom: 0 }}
         maxZoom={20}
         minZoom={3}>
         <FullscreenControl position="top-left" />

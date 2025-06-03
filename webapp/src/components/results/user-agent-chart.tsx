@@ -1,11 +1,21 @@
 "use client";
 
 import * as React from "react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogAnalysisReport } from "@/types";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8", "#82CA9D"];
+// Tailwind CSS colors
+const COLORS = [
+  "#3B82F6", // blue-500
+  "#10B981", // emerald-500
+  "#F59E0B", // amber-500
+  "#EF4444", // red-500
+  "#8B5CF6", // violet-500
+  "#EC4899", // pink-500
+  "#14B8A6", // teal-500
+  "#F97316", // orange-500
+];
 
 interface UserAgentChartProps {
   report: LogAnalysisReport;
@@ -13,10 +23,14 @@ interface UserAgentChartProps {
 
 export default function UserAgentChart({ report }: UserAgentChartProps) {
   const data = React.useMemo(() => {
-    return Object.entries(report.user_agent_counts).map(([name, value]) => ({
-      name: name.length > 30 ? name.substring(0, 30) + "..." : name,
-      value,
-    }));
+    return Object.entries(report.user_agent_counts)
+      .map(([name, value]) => ({
+        name: name.length > 30 ? name.substring(0, 30) + "..." : name,
+        value,
+        fullName: name,
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 8); // Show top 8 user agents
   }, [report.user_agent_counts]);
 
   return (
@@ -28,23 +42,19 @@ export default function UserAgentChart({ report }: UserAgentChartProps) {
       <CardContent>
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}>
+            <BarChart
+              data={data}
+              layout="vertical"
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <XAxis type="number" />
+              <YAxis type="category" dataKey="name" width={150} tick={{ fontSize: 12 }} />
+              <Tooltip formatter={(value, name, props) => [value, props.payload.fullName]} />
+              <Bar dataKey="value">
                 {data.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
+              </Bar>
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </CardContent>

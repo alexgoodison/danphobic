@@ -320,6 +320,53 @@ def analyze_error_paths(logs: List[LogEntry], error_threshold: int = 3) -> Dict[
     
     return dict(significant_errors)
 
+def analyze_bot_vs_human_traffic(logs: List[LogEntry]) -> List[Tuple[str, int, int]]:
+    """
+    Analyze the distribution of bot vs human traffic over time.
+    
+    Args:
+        logs: List of LogEntry objects to analyse
+        
+    Returns:
+        List[Tuple[str, int, int]]: List of (timestamp, bot_count, human_count) tuples per minute
+    """
+    if not logs:
+        return []
+    
+    # Sort logs by timestamp
+    sorted_logs = sorted(logs, key=lambda x: x.datetime)
+    
+    # Get the time range
+    start_time = datetime.fromisoformat(sorted_logs[0].datetime)
+    end_time = datetime.fromisoformat(sorted_logs[-1].datetime)
+    
+    # Initialize the time series data
+    time_series = []
+    current_time = start_time
+    
+    # Group logs by minute
+    while current_time <= end_time:
+        next_time = current_time + timedelta(minutes=1)
+        
+        # Count bot and human requests in this minute
+        bot_count = 0
+        human_count = 0
+        
+        for log in sorted_logs:
+            log_time = datetime.fromisoformat(log.datetime)
+            if current_time <= log_time < next_time:
+                if 'bot' in log.http_user_agent.lower():
+                    print("bot", log.http_user_agent)
+                    bot_count += 1
+                else:
+                    print("human", log.http_user_agent)
+                    human_count += 1
+        
+        time_series.append((current_time.isoformat(), bot_count, human_count))
+        current_time = next_time
+    
+    return time_series
+
 def generate_insights(
     blacklist_occurance: List[str],
     request_counts: dict[str, int],

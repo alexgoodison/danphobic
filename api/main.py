@@ -8,7 +8,7 @@ from typing import Dict, Any
 from services.elastic import es, es_index
 from services.log_parser import NginxLogParser
 from model.log import  LogEntry
-from services.parser import check_blacklist_occurance, count_requests_by_ip, detect_high_frequency_ips, detect_suspicious_user_agents, detect_sensitive_endpoint_access, detect_burst_requests, count_user_agents, generate_insights, count_status_codes, count_http_methods, calculate_requests_per_minute, analyze_error_paths, count_most_accessed_paths, generate_map_markers
+from services.parser import check_blacklist_occurance, count_requests_by_ip, detect_high_frequency_ips, detect_suspicious_user_agents, detect_sensitive_endpoint_access, detect_burst_requests, count_user_agents, generate_insights, count_status_codes, count_http_methods, calculate_requests_per_minute, analyze_error_paths, count_most_accessed_paths, generate_map_markers, analyze_bot_vs_human_traffic
 from services.gemini import gemini_model
 
 app = FastAPI()
@@ -52,6 +52,7 @@ async def analyse_logs(query: Dict[str, Any] = Body(...)):
         requests_per_minute = calculate_requests_per_minute(logs) # List of (timestamp, count) tuples
         error_paths = analyze_error_paths(logs) # Dictionary of paths and their error counts
         path_counts = count_most_accessed_paths(logs) # Get all path counts
+        bot_vs_human_traffic = analyze_bot_vs_human_traffic(logs) # List of (timestamp, bot_count, human_count) tuples
 
         # Generate insights including path analysis
         insights = generate_insights(
@@ -69,17 +70,17 @@ async def analyse_logs(query: Dict[str, Any] = Body(...)):
             path_counts
         )
 
-        print(f"Insights: {insights}")
-        print(f"Status counts: {status_counts}")
-        print(f"Method counts: {method_counts}")
-        print(f"Requests per minute: {requests_per_minute[:5]}...")  # Print first 5 data points
-        print(f"Error paths: {error_paths}")
-        print(f"Path counts: {path_counts}")
+        # print(f"Insights: {insights}")
+        # print(f"Status counts: {status_counts}")
+        # print(f"Method counts: {method_counts}")
+        # print(f"Requests per minute: {requests_per_minute[:5]}...")  # Print first 5 data points
+        # print(f"Error paths: {error_paths}")
+        # print(f"Path counts: {path_counts}")
+        print(f"Bot vs human traffic: {bot_vs_human_traffic}")
 
         summary = gemini_model.generate_content(f"<instructions>The following are key insights from a group of Nginx logs. In the response, only provide a bulletpointed, formatted summary of the key insights. Only use one level of bullet points. Include at most 7 bullet points. Ensure they are informative. Only provide the bulletpoints, no other text.</instructions> <insights>Total number of logs: {len(logs)}. Key insights: {insights}</insights>")
 
         map_markers = generate_map_markers(logs)
-        print(f"Map markers: {map_markers}")
 
         return {
             "message": "Logs retrieved successfully",
@@ -99,7 +100,8 @@ async def analyse_logs(query: Dict[str, Any] = Body(...)):
             "path_counts": path_counts,
             "insights": insights,
             "summary": summary.text,
-            "map_markers": map_markers
+            "map_markers": map_markers,
+            "bot_vs_human_traffic": bot_vs_human_traffic
         }
 
     except Exception as e:

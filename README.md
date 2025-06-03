@@ -8,7 +8,7 @@ Danphobic is a powerful web-based dashboard for analyzing NGINX access logs. It 
 
 ## 🎥 Demo
 
-![Demo Video](resources/demo.mov)
+[![Danphobic Demo](https://img.youtube.com/vi/aNV8Q0hqLG8/0.jpg)](https://www.youtube.com/watch?v=aNV8Q0hqLG8)
 
 ## 🚀 Features
 
